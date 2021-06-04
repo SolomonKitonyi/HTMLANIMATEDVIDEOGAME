@@ -96,7 +96,8 @@ function spawnEnemies() {
 let animationId;
 function animate() {
   animationId = requestAnimationFrame(animate);
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  c.fillStyle = "rgba(0, 0, 0,0.1)";
+  c.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   projectiles.forEach((projectile, index) => {
     projectile.update();
@@ -134,7 +135,6 @@ function animate() {
 }
 
 addEventListener("click", (event) => {
-  console.log(projectiles);
   const angle = Math.atan2(
     event.clientY - canvas.height / 2,
     event.clientX - canvas.width / 2
