@@ -62,6 +62,7 @@ class Enemy {
   }
 }
 
+const friction = 0.99;
 class Particle {
   constructor(x, y, radius, color, velocity) {
     this.x = x;
@@ -82,6 +83,8 @@ class Particle {
   }
   update() {
     this.draw();
+    this.velocity.y *= friction;
+    this.velocity.y *= friction;
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
     this.alpha -= 0.01;
@@ -119,7 +122,6 @@ function spawnEnemies() {
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 1000);
 }
-Enemy;
 
 let animationId;
 function animate() {
@@ -171,8 +173,8 @@ function animate() {
               Math.random() * 2,
               enemy.color,
               {
-                x: Math.random() - 0.5,
-                y: Math.random() - 0.5,
+                x: (Math.random() - 0.5) * (Math.random() * 6),
+                y: (Math.random() - 0.5) * (Math.random() * 6),
               }
             )
           );
