@@ -119,15 +119,21 @@ function spawnEnemies() {
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 1000);
 }
+Enemy;
 
 let animationId;
 function animate() {
+  Enemy;
   animationId = requestAnimationFrame(animate);
   c.fillStyle = "rgba(0, 0, 0,0.1)";
   c.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
-  particles.forEach((particle) => {
-    particle.update();
+  particles.forEach((particle, index) => {
+    if (particle.alpha <= 0) {
+      particles.splice(index, 1);
+    } else {
+      particle.update();
+    }
   });
   projectiles.forEach((projectile, index) => {
     projectile.update();
@@ -156,12 +162,19 @@ function animate() {
 
       //remove when it touches the enemies
       if (dist - projectile.radius - enemy.radius < 1) {
-        for (let i = 0; i < 8; i++) {
+        //create explosions
+        for (let i = 0; i < enemy.radius * 2; i++) {
           particles.push(
-            new Particle(projectile.x, projectile.y, 3, enemy.color, {
-              x: Math.random() - 0.5,
-              y: Math.random() - 0.5,
-            })
+            new Particle(
+              projectile.x,
+              projectile.y,
+              Math.random() * 2,
+              enemy.color,
+              {
+                x: Math.random() - 0.5,
+                y: Math.random() - 0.5,
+              }
+            )
           );
         }
         if (enemy.radius - 10 > 5) {
