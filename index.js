@@ -14,6 +14,8 @@ class Player {
   constructor(x, y, radius, color) {
     this.x = x;
     this.y = y;
+    this.dx = 5;
+    this.dy = 5;
     this.radius = radius;
     this.color = color;
     this.pressingRight = false;
@@ -29,16 +31,25 @@ class Player {
   }
   updatePosition() {
     if (this.pressingRight) {
-      this.x += 5;
+      this.x += this.dx;
     }
     if (this.pressingLeft) {
-      this.x -= 5;
+      this.x -= this.dx;
     }
     if (this.pressingDown) {
-      this.y += 5;
+      this.y += this.dy;
     }
     if (this.pressingUp) {
-      this.y -= 5;
+      this.y -= this.dy;
+    }
+    //Ensure player is within boundaries
+    if (this.x - this.radius < 0 || this.x + this.radius > innerWidth) {
+      console.log(this.x);
+      this.x = -this.x;
+    }
+    if (this.y - this.radius < 0 || this.y + this.radius > innerHeight) {
+      console.log(this.y);
+      this.y = -this.y;
     }
   }
 }
