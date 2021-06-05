@@ -8,6 +8,7 @@ canvas.height = innerHeight;
 const scoreEl = document.querySelector("#scoreEl");
 const startGame = document.querySelector("#startGame");
 const modalEl = document.querySelector("#modalEl");
+const bigScoreEl = document.querySelector("#bigScoreEl");
 
 class Player {
   constructor(x, y, radius, color) {
@@ -15,12 +16,30 @@ class Player {
     this.y = y;
     this.radius = radius;
     this.color = color;
+    this.pressingRight = false;
+    this.pressingLeft = false;
+    this.pressingUp = false;
+    this.pressingDown = false;
   }
   draw() {
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     c.fillStyle = this.color;
     c.fill();
+  }
+  updatePosition() {
+    if (this.pressingRight) {
+      this.x += 5;
+    }
+    if (this.pressingLeft) {
+      this.x -= 5;
+    }
+    if (this.pressingDown) {
+      this.y += 5;
+    }
+    if (this.pressingUp) {
+      this.y -= 5;
+    }
   }
 }
 
@@ -100,10 +119,20 @@ const y = canvas.height / 2;
 
 const player = new Player(x, y, 30, "white");
 
-const projectiles = [];
-const enemies = [];
-const particles = [];
+let projectiles = [];
+let enemies = [];
+let particles = [];
 
+function init() {
+  projectiles = [];
+  enemies = [];
+  particles = [];
+  score = 0;
+  player.x = canvas.width / 2;
+  player.y = canvas.height / 2;
+  scoreEl.innerHTML = score;
+  bigScoreEl.innerHTML = score;
+}
 function spawnEnemies() {
   setInterval(() => {
     const radius = Math.random() * (30 - 4) + 4;
@@ -160,8 +189,12 @@ function animate() {
   enemies.forEach((enemy, index) => {
     enemy.update();
     const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+
+    //End Game
     if (dist - player.radius - enemy.radius < 1) {
       cancelAnimationFrame(animationId);
+      modalEl.style.display = "flex";
+      bigScoreEl.innerHTML = score;
     }
 
     projectiles.forEach((projectile, projectileIndex) => {
@@ -209,23 +242,47 @@ function animate() {
 }
 
 addEventListener("click", (event) => {
-  const angle = Math.atan2(
-    event.clientY - canvas.height / 2,
-    event.clientX - canvas.width / 2
-  );
+  const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x);
   const velocity = {
     x: Math.cos(angle) * 5,
     y: Math.sin(angle) * 5,
   };
-  projectiles.push(
-    new Projectile(canvas.width / 2, canvas.height / 2, 5, "white", velocity)
-  );
+  projectiles.push(new Projectile(player.x, player.y, 5, "white", velocity));
 });
 
-startGame.addEventListener('click',() =>{
+startGame.addEventListener("click", () => {
+  init();
   animate();
   spawnEnemies();
-  modalEl.style.display = 'none';
+  modalEl.style.display = "none";
+});
+window.document.onkeydown = (event) => {
+  if (event.keyCode === 39) {
+    player.pressingRight = true;
+  }
+  if (event.keyCode === 40) {
+    player.pressingDown = true;
+  }
+  if (event.keyCode === 37) {
+    player.pressingLeft = true;
+  }
+  if (event.keyCode === 38) {
+    player.pressingUp = true;
+  }
+  player.updatePosition();
+};
 
-})
-
+window.document.onkeyup = (event) => {
+  if (event.keyCode === 39) {
+    player.pressingRight = false;
+  }
+  if (event.keyCode === 40) {
+    player.pressingDown = false;
+  }
+  if (event.keyCode === 37) {
+    player.pressingLeft = false;
+  }
+  if (event.keyCode === 38) {
+    player.pressingUp = false;
+  }
+};
